@@ -6,7 +6,7 @@ A production-ready backend API built with FastAPI that analyzes resume text, ext
 
 ⸻
 
-##📌 Features
+## 📌 Features
 	•	🔍 Analyze resume content for key skills
 	•	📊 Generate a skill-based score
 	•	💾 Store results in PostgreSQL
@@ -18,7 +18,7 @@ A production-ready backend API built with FastAPI that analyzes resume text, ext
 
 ⸻
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 	•	Backend Framework: FastAPI
 	•	Database: PostgreSQL
 	•	ORM: SQLAlchemy
