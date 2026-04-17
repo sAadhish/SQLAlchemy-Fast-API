@@ -4,7 +4,7 @@
 
 A production-ready backend API built with FastAPI that analyzes resume text, extracts key skills, assigns a score, and stores results in a PostgreSQL database.
 
-⸻
+
 
 ## 📌 Features
 	•	🔍 Analyze resume content for key skills
@@ -16,7 +16,6 @@ A production-ready backend API built with FastAPI that analyzes resume text, ext
 	•	🧠 Built with clean architecture & ORM (SQLAlchemy)
 	•	📜 Logging & error handling implemented
 
-⸻
 
 ## 🛠️ Tech Stack
 	•	Backend Framework: FastAPI
@@ -25,7 +24,7 @@ A production-ready backend API built with FastAPI that analyzes resume text, ext
 	•	Validation: Pydantic
 	•	Server: Uvicorn
 
-⸻
+
 
 ## 📂 Project Structure
     resume-analyzer/
@@ -72,25 +71,21 @@ Update your database.py with credentials:
     }
 
 
-⸻
 
 ### 🔹 Get All Resumes
 
     GET /resumes
 
-⸻
 
 ### 🔹 Update Resume Score
 
 	PUT /resumes/{id}?score=5
 
-⸻
 
 ### 🔹 Delete Resume
 
 	DELETE /resumes/{id}
 
-⸻
 
 ## 🧪 API Testing
 
@@ -111,6 +106,6 @@ Update your database.py with credentials:
 	•	Logs errors for debugging
 
 	
-#👨‍💻 Author
+# 👨‍💻 Author
 
 ## Aadhish S
