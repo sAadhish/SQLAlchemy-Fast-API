@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException
-from models import Resume as ResumeModel
+from fastapi import FastAPI, HTTPException,Depends
+from models import Resume as ResumeModel,User
 from analyser import analyser
 from database import SessionLocal
-from validate import Resume
+from schemas import Resume,UserCreate
 import logging
-
+from auth import hash_password,verify_password,create_access_token,get_current_user
+from fastapi.security import OAuth2PasswordBearer
 
 app = FastAPI()
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 #------- POST -------
 @app.post("/analyze")
-def analyze(resume: Resume):
+def analyze(resume: Resume,user=Depends(get_current_user)):
     try:
         logger.info("Received resume for analysis")
 
@@ -24,7 +25,7 @@ def analyze(resume: Resume):
         new_resume = ResumeModel(
             content=resume.content,
             skills=",".join(result["Skills"]),
-            score=result["score"],
+            score=result["Score"],
             experience=result["Experience"]
         )
 
@@ -96,3 +97,71 @@ def delete_resume(id: int):
     db.close()
 
     return {"message": "Resume deleted"}
+
+
+# ----- Register ----- POST -----
+
+@app.post("/register")
+def register(user : UserCreate):
+    db = SessionLocal()
+
+    existing_user = db.query(User).filter(User.username == user.username).first()
+
+    if existing_user:
+        db.close()
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    hashed_pwd = hash_password(user.password)
+
+    new_user = User(
+        username=user.username,
+        hashed_password=hashed_pwd
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.close()
+
+    return {"message": "User registered successfully"}
+
+
+# ------------- GET ----------
+
+@app.get("/users")
+def user_list():
+    db = SessionLocal()
+    users = db.query(User).all()
+    db.close()
+
+    result = []
+
+    for user in users:
+        result.append({
+            "id": user.id,
+            "username": user.username
+        })
+
+    return result
+
+# ------- LOGIN --------
+
+@app.post("/login")
+def login(user : UserCreate):
+
+    db=SessionLocal()
+
+    db_user = db.query(User).filter(user.username == User.username).first()
+
+    if not db_user:
+        db.close()
+        raise HTTPException(status_code=400,detail="User not found")
+    
+    if not verify_password(user.password,db_user.hashed_password):
+        db.close()
+        raise HTTPException(status_code=400,detail="User not found")
+    
+    db.close()
+
+    token = create_access_token({"sub":db_user.username})
+
+    return {"access_token": token}

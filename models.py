@@ -1,9 +1,10 @@
-from sqlalchemy import Column, Integer,Text
+from sqlalchemy import Column, Integer,Text,String
 from database import engine
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
+#upload resume
 class Resume(Base):
     __tablename__ = "resumes"
 
@@ -13,6 +14,13 @@ class Resume(Base):
     experience = Column(Text)
     score = Column(Integer)
     
+#User authentification
+class User(Base):
+    __tablename__="users"
+
+    id =Column(Integer,primary_key=True,index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
 
 #create table
 Base.metadata.create_all(bind=engine)
