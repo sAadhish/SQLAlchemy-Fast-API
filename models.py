@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer,Text,String
+from sqlalchemy import Column, Integer,Text,String,ForeignKey
 from database import engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base,relationship
 
 Base = declarative_base()
 
@@ -13,7 +13,7 @@ class Resume(Base):
     skills  = Column(Text)
     experience = Column(Text)
     score = Column(Integer)
-    
+    user_id = Column(Integer,ForeignKey("users.id"))
 #User authentification
 class User(Base):
     __tablename__="users"

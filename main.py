@@ -26,7 +26,8 @@ def analyze(resume: Resume,user=Depends(get_current_user)):
             content=resume.content,
             skills=",".join(result["Skills"]),
             score=result["Score"],
-            experience=result["Experience"]
+            experience=result["Experience"],
+            user_id =user.id
         )
 
         db.add(new_resume)
@@ -48,9 +49,9 @@ def analyze(resume: Resume,user=Depends(get_current_user)):
 
 #------- GET -------
 @app.get("/resumes")
-def get_resumes():
+def get_resumes(user=Depends(get_current_user)):
     db = SessionLocal()
-    resumes = db.query(ResumeModel).all()
+    resumes = db.query(ResumeModel).filter(ResumeModel.user_id == user.id).all()
     db.close()
 
     result = []
@@ -68,9 +69,9 @@ def get_resumes():
 
 #------- PUT -------
 @app.put("/resumes/{id}")
-def update_resume(id: int, score: int):
+def update_resume(id: int, score: int,user = Depends(get_current_user)):
     db = SessionLocal()
-    resume = db.query(ResumeModel).filter(ResumeModel.id == id).first()
+    resume = db.query(ResumeModel).filter(ResumeModel.id == id,ResumeModel.user_id == user.id).first()
 
     if not resume:
         db.close()
@@ -84,9 +85,9 @@ def update_resume(id: int, score: int):
 
 #------- DELETE -------
 @app.delete("/resumes/{id}")
-def delete_resume(id: int):
+def delete_resume(id: int,user = Depends(get_current_user)):
     db = SessionLocal()
-    resume = db.query(ResumeModel).filter(ResumeModel.id == id).first()
+    resume = db.query(ResumeModel).filter(ResumeModel.id == id,ResumeModel.user_id == user.id).first()
 
     if not resume:
         db.close()
@@ -125,7 +126,7 @@ def register(user : UserCreate):
     return {"message": "User registered successfully"}
 
 
-# ------------- GET ----------
+# ------------- GET USERS----------
 
 @app.get("/users")
 def user_list():

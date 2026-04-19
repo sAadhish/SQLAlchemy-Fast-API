@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import os
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from database import SessionLocal
+from models import User
 
 load_dotenv()
 
@@ -33,9 +35,6 @@ def create_access_token(data : dict):
 
     return token
 
-
-
-
 def verify_token(token: str):
     if token.startswith("Bearer "):
         token = token.split(" ")[1]
@@ -57,4 +56,13 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    return payload
+    username =payload.get("sub")
+
+    db = SessionLocal()
+    user = db.query(User).filter(User.username == username).first()
+    db.close()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    return user
