@@ -6,6 +6,9 @@ from schemas import Resume,UserCreate
 import logging
 from auth import hash_password,verify_password,create_access_token,get_current_user
 from fastapi.security import OAuth2PasswordBearer
+import os
+from dotenv import load_dotenv
+from ai import analyze_resume_ai
 
 app = FastAPI()
 
@@ -18,16 +21,16 @@ def analyze(resume: Resume,user=Depends(get_current_user)):
     try:
         logger.info("Received resume for analysis")
 
-        result = analyser(resume.content)
+        result = analyze_resume_ai(resume.content)
 
         db = SessionLocal()
 
         new_resume = ResumeModel(
             content=resume.content,
-            skills=",".join(result["Skills"]),
-            score=result["Score"],
-            experience=result["Experience"],
-            user_id =user.id
+            skills=",".join(result.get("skills",[])),
+            score = result.get("score", 0),
+            experience=".".join(result.get("experience","")),
+            user_id=user.id
         )
 
         db.add(new_resume)
@@ -166,3 +169,11 @@ def login(user : UserCreate):
     token = create_access_token({"sub":db_user.username})
 
     return {"access_token": token}
+
+
+
+
+# ---------- Open AI --------------
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
