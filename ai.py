@@ -59,7 +59,7 @@ def matching_job(resume_text: str ,job_desc : str):
         model="gemini-3-flash-preview",
         contents=prompt
     )
-
+    #return print(response)
     try:
         return json.loads(response.text)
     except:

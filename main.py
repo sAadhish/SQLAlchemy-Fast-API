@@ -2,13 +2,13 @@ from fastapi import FastAPI, HTTPException,Depends
 from models import Resume as ResumeModel,User
 from analyser import analyser
 from database import SessionLocal
-from schemas import Resume,UserCreate
+from schemas import Resume,UserCreate,JobMatchRequest
 import logging
 from auth import hash_password,verify_password,create_access_token,get_current_user
 from fastapi.security import OAuth2PasswordBearer
 import os
 from dotenv import load_dotenv
-from ai import analyze_resume_ai
+from ai import analyze_resume_ai,matching_job
 
 app = FastAPI()
 
@@ -49,7 +49,23 @@ def analyze(resume: Resume,user=Depends(get_current_user)):
         logger.error(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Something went wrong")
 
+#------- POST -------- Compare Job Description -------
+@app.post("/compare")
+def resume_job(data : JobMatchRequest, user = Depends(get_current_user)):
+    try:
+        logger.info("Received resume for analysis")
+        result = matching_job(data.content,data.job_description)
 
+        return {
+            "status":"success",
+            "data":result
+        }
+
+        
+    except Exception as e:
+        logger.error(f"Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Something went wrong")
+    
 #------- GET -------
 @app.get("/resumes")
 def get_resumes(user=Depends(get_current_user)):
@@ -171,9 +187,3 @@ def login(user : UserCreate):
     return {"access_token": token}
 
 
-
-
-# ---------- Open AI --------------
-
-load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
