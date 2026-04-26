@@ -1,3 +1,5 @@
+'''
+
 from fastapi import FastAPI, HTTPException
 from database import SessionLocal
 from models import User
@@ -48,3 +50,4 @@ def user_list():
 
     return result
 
+'''

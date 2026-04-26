@@ -64,3 +64,6 @@ def matching_job(resume_text: str ,job_desc : str):
         return json.loads(response.text)
     except:
         return {"error": "Invalid JSON", "raw": response.text}
+    
+
+

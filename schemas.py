@@ -11,3 +11,7 @@ class UserCreate(BaseModel):
 class JobMatchRequest(BaseModel):
         content : str = Field(min_length=10)
         job_description: str = Field(min_length=10)
+
+class MultiJobMatchRequest(BaseModel):
+     content : str = Field(min_length=10)
+     job_description: list[str]

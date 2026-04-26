@@ -22,5 +22,14 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
 
+
+class JobMatch(Base):
+    __tablename__="job_matches"
+    id = Column(Integer, primary_key=True, index=True)
+    job = Column(Text)
+    score = Column(Integer)
+    fit = Column(String)
+    user_id = Column(Integer,ForeignKey("users.id"))
+
 #create table
 Base.metadata.create_all(bind=engine)
